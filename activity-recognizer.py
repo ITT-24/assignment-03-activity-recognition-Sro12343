@@ -4,6 +4,8 @@ from DIPPID import SensorUDP
 import pyglet
 import os
 from live_recognizer import live_recognizer
+from song_player import songPlayer
+import mido
 
 
 #from DIPPID import SensorSerial
@@ -12,6 +14,19 @@ from live_recognizer import live_recognizer
 # use UPD (via WiFi) for communication
 PORT = 5700
 sensor = SensorUDP(PORT)
+
+
+# pritn info about the audio output devices
+# let user select audio output device
+OUTPUT_PORT = None
+output_devices = mido.get_output_names()
+if(len(output_devices)>0):
+    for i in range(0,len(output_devices)):
+        print("Output Device id ",i," - ", output_devices[i])
+    print('select audio output device:')
+    
+    output_index= int(input())
+    OUTPUT_PORT = OUTPUT_PORT = mido.open_output(output_devices[output_index])
 
 #Setup pyglet window            
 window_size_x = 704
@@ -43,6 +58,13 @@ background_color = (50,50,50,255)
 label_Instructions = pyglet.text.Label(text="Do: "+activity_names[index], x=10, y=650,color=neutral_color)
 label_output = pyglet.text.Label(text="Your Activity: ", x=10, y=550,color=neutral_color)
 label_space = pyglet.text.Label(text="Press Space for the next exercise", x=350, y=10,color=neutral_color, anchor_x='center')
+
+
+
+#setup music player
+music_folder = os.path.join(current_dir, 'music')
+song_name = "WiiSports.mid"
+player = songPlayer(music_folder,song_name,OUTPUT_PORT)
 
 #Load the different imagey
 for n in activity_names:
@@ -112,7 +134,19 @@ def update(dt):
             label_output.color = correct_color
         else:
             label_output.color = false_color
- 
+
+
+@window.event  
+def on_close():
+    player.stop_play()
+    pyglet.app.exit()
+    window.close()
+
+
+
+player.play_song()
+
+
 #Start pyglet update and app loop       
 pyglet.clock.schedule_interval(update, 1/100)
 pyglet.app.run()

@@ -125,7 +125,7 @@ class train_classifier():
         
     #predict what activity is being recorded by the sensor
     def predict_one(self,live_data):
-        if live_data:
+        if len(live_data) >0 and live_data[0][0]!=None:
             self.live_data = live_data
             test = {}
             test['acc_x_f'] = self.calc_frequency([row[0] for row in self.live_data])
@@ -135,9 +135,6 @@ class train_classifier():
             test['gyro_y_f'] = self.calc_frequency([row[4] for row in self.live_data])
             test['gyro_z_f'] = self.calc_frequency([row[5] for row in self.live_data])
             test = pd.DataFrame([test])
-            print("test")
-            print(test)
-            print(test.shape)
             prediction = self.classifier.predict(test)
             return prediction[0]
         else:
