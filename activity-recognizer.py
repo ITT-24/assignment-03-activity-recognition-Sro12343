@@ -39,10 +39,10 @@ correct_color = (20,255,20,255)
 false_color = (255,20,20,255)
 background_color = (50,50,50,255)
 
-#Create Lables
-lable_Instructions = pyglet.text.Label(text="Do: "+activity_names[index], x=10, y=650,color=neutral_color)
-lable_output = pyglet.text.Label(text="Your Activity: ", x=10, y=550,color=neutral_color)
-
+#Create labels
+label_Instructions = pyglet.text.Label(text="Do: "+activity_names[index], x=10, y=650,color=neutral_color)
+label_output = pyglet.text.Label(text="Your Activity: ", x=10, y=550,color=neutral_color)
+label_space = pyglet.text.Label(text="Press Space for the next exercise", x=350, y=10,color=neutral_color, anchor_x='center')
 
 #Load the different imagey
 for n in activity_names:
@@ -73,7 +73,7 @@ def on_key_press(symbol, modifiers):
             index = 0
         sprit1.image = image_list_1[index]
         sprit2.image = image_list_2[index]
-        lable_Instructions.text = "DO: "+ activity_names[index]
+        label_Instructions.text = "DO: "+ activity_names[index]
             
             
 @window.event
@@ -82,9 +82,9 @@ def on_draw():
     background.draw()
     sprit2.draw()
     sprit1.draw()
-    lable_output.draw()
-    lable_Instructions.draw()
-    
+    label_output.draw()
+    label_Instructions.draw()
+    label_space.draw()
 
 
 def record():
@@ -103,16 +103,15 @@ def record():
 def update(dt):
     data = record()
     result = live_recognizer.live_record(data)
-    print(result)
-    
     #check if a correct activity was detected
     if result !="No measurement":
-        lable_output.text = "Your Activity: " + result
+        print(result)
+        label_output.text = "Your Activity: " + result
         
         if result == activity_names[index]:
-            lable_output.color = correct_color
+            label_output.color = correct_color
         else:
-            lable_output.color = false_color
+            label_output.color = false_color
  
 #Start pyglet update and app loop       
 pyglet.clock.schedule_interval(update, 1/100)

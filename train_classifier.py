@@ -37,12 +37,12 @@ class train_classifier():
             file_p = os.path.join(self.data_Location,f)
             if os.path.isfile(file_p):
                 df = pd.read_csv(file_p)
-                activity = self.decide_lable(f)
+                activity = self.decide_label(f)
                 #devide into smaler data sets
                 self.devide_data(activity,df)
 
     #dacide what activity a data set is, based on the file name
-    def decide_lable(self,f):
+    def decide_label(self,f):
         if "rowing" in f:
             return "rowing" 
         elif "lifting" in f:
@@ -51,6 +51,9 @@ class train_classifier():
             return "running"   
         elif "jumping" in f:
             return "jumpingjack"  
+        elif "nothing" in f:
+            return "nothing"
+        
         
         
     #Devide date into smaler data sets
@@ -122,19 +125,21 @@ class train_classifier():
         
     #predict what activity is being recorded by the sensor
     def predict_one(self,live_data):
-        self.live_data = live_data
-        test = {}
-        test['acc_x_f'] = self.calc_frequency([row[0] for row in self.live_data])
-        test['acc_y_f'] = self.calc_frequency([row[1] for row in self.live_data])
-        test['acc_z_f'] = self.calc_frequency([row[2] for row in self.live_data])
-        test['gyro_x_f'] = self.calc_frequency([row[3] for row in self.live_data])
-        test['gyro_y_f'] = self.calc_frequency([row[4] for row in self.live_data])
-        test['gyro_z_f'] = self.calc_frequency([row[5] for row in self.live_data])
-        test = pd.DataFrame([test])
-        print("test")
-        print(test)
-        print(test.shape)
-        prediction = self.classifier.predict(test)
-        return prediction[0]
-        
+        if live_data:
+            self.live_data = live_data
+            test = {}
+            test['acc_x_f'] = self.calc_frequency([row[0] for row in self.live_data])
+            test['acc_y_f'] = self.calc_frequency([row[1] for row in self.live_data])
+            test['acc_z_f'] = self.calc_frequency([row[2] for row in self.live_data])
+            test['gyro_x_f'] = self.calc_frequency([row[3] for row in self.live_data])
+            test['gyro_y_f'] = self.calc_frequency([row[4] for row in self.live_data])
+            test['gyro_z_f'] = self.calc_frequency([row[5] for row in self.live_data])
+            test = pd.DataFrame([test])
+            print("test")
+            print(test)
+            print(test.shape)
+            prediction = self.classifier.predict(test)
+            return prediction[0]
+        else:
+            return "No measurement"        
         
